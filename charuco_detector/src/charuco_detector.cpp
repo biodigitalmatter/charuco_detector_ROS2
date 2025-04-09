@@ -306,10 +306,10 @@ void ChArUcoDetector::imageCallback(const sensor_msgs::msg::Image::ConstSharedPt
 				static_tf_broadcaster_->sendTransform(transform_stamped_);
 			else
 				tf_broadcaster_->sendTransform(transform_stamped_);
-			sensor_msgs::msg::Image::Ptr image_results_msg = cv_bridge::CvImage(_msg->header, "bgr8", image_results).toImageMsg();
+			std::shared_ptr<sensor_msgs::msg::Image> image_results_msg = cv_bridge::CvImage(_msg->header, "bgr8", image_results).toImageMsg();
 			image_results_publisher_.publish(image_results_msg);
 		} else {
-			sensor_msgs::msg::Image::Ptr image_filtered_msg = cv_bridge::CvImage(_msg->header, "mono8", image_grayscale).toImageMsg();
+			std::shared_ptr<sensor_msgs::msg::Image> image_filtered_msg = cv_bridge::CvImage(_msg->header, "mono8", image_grayscale).toImageMsg();
 			image_results_publisher_.publish(image_filtered_msg);
 		}
 	} 
@@ -377,7 +377,7 @@ bool ChArUcoDetector::detectChArUcoBoard(const cv::Mat &_image_grayscale, const 
 	if (valid_pose) {
 		if (_image_with_detection_results.needed()) {
 			float axisLength = 0.5f * (static_cast<float>(std::min(number_of_squares_in_x_, number_of_squares_in_y_) * (squares_sides_size_m_)));
-			cv::aruco::drawAxis(_image_with_detection_results, _camera_intrinsics, _camera_distortion_coefficients, _camera_rotation_out, _camera_translation_out, axisLength);
+			cv::drawFrameAxes(_image_with_detection_results, _camera_intrinsics, _camera_distortion_coefficients, _camera_rotation_out, _camera_translation_out, axisLength);
 		}
 		return true;
 	}
